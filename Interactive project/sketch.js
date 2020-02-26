@@ -16,7 +16,7 @@ let movingUp = false;
 let movingDown = false;
 let movingLeft = false;
 let movingRight = false;
-
+let scalar = 0.7;
 
 function preload(){
   entity = loadImage("assets/Millenium Falcon.jpg");
@@ -25,17 +25,31 @@ function preload(){
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
+  x = width/2;
+  y = height/2;
 }
 
 function draw() {
-  background(220);
+  moveEntity();
   createShip();
- 
+  background(220);
 }
 
-function createShip(){
-  image(entity, x, y);
 
+
+
+
+
+
+
+
+
+
+
+
+
+function createShip(){
+  image(entity, x, y, scalar * entity.width, scalar * entity.height);
 }
 
 function keyPressed() {
@@ -69,7 +83,7 @@ function keyReleased() {
 }
 
 
-function moveBox() {
+function moveEntity() {
   if (movingUp) {
     y -= dy;
   }
@@ -84,8 +98,5 @@ function moveBox() {
   }
 }
 
-function displayBox() {
-  fill("black");
-  rect(x, y, 50, 50);
-}
+
 
