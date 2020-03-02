@@ -16,7 +16,7 @@ let movingUp = false;
 let movingDown = false;
 let movingLeft = false;
 let movingRight = false;
-let scalar = 0.7;
+let scalar = 0.2;
 
 function preload(){
   entity = loadImage("assets/Millenium Falcon.jpg");
@@ -30,9 +30,10 @@ function setup() {
 }
 
 function draw() {
+  background(220);
   moveEntity();
   createShip();
-  background(220);
+  
 }
 
 
@@ -55,6 +56,7 @@ function createShip(){
 function keyPressed() {
   if (key === "w") {
     movingUp = true;
+    
   }
   if (key === "a") {
     movingLeft = true;
