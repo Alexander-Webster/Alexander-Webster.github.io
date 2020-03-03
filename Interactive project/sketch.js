@@ -12,11 +12,12 @@ let x;
 let y;
 let dx = 5;
 let dy = 5;
-let movingUp = false;
-let movingDown = false;
-let movingLeft = false;
-let movingRight = false;
+let speedUp = false;
+let speedDown = false;
+let turnLeft = false;
+let turnRight = false;
 let scalar = 0.2;
+let rotation = 0;
 
 //preloads picture 
 function preload(){
@@ -28,12 +29,12 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   x = width/2;
   y = height/2;
+  angleMode(DEGREES);
 }
 
 function draw() {
   background(220);
-  moveEntity();
-  createShip();
+  playerShip();
   
 }
 
@@ -45,14 +46,15 @@ function createShip(){
 }
 
 
+function playerShip(){
+  // moveEntity();
+  createShip();
+}
 
-
-
-
-
-
-
-
+function movePlayer(){
+  changeDirection();
+  changeSpeed();
+}
 
 
 
@@ -90,50 +92,49 @@ function createShip(){
 
 function keyPressed() {
   if (key === "w") {
-    movingUp = true;
-    
+    speedUp = true; 
   }
   if (key === "a") {
-    movingLeft = true;
+    rotateLeft = true;
   }
   if (key === "s") {
-    movingDown = true;
+    speedDown = true;
   }
   if (key === "d") {
-    movingRight = true;
+    rotateRight = true;
   }
 }
 
 function keyReleased() {
   if (key === "w") {
-    movingUp = false;
+    speedUp = false;
   }
   if (key === "a") {
-    movingLeft = false;
+    rotateLeft = false;
   }
   if (key === "s") {
-    movingDown = false;
+    speedDown = false;
   }
   if (key === "d") {
-    movingRight = false;
+    rotateRight = false;
   }
 }
 
 
-function moveEntity() {
-  if (movingUp) {
-    y -= dy;
-  }
-  if (movingLeft) {
-    x -= dx;
-  }
-  if (movingDown) {
-    y += dy;
-  }
-  if (movingRight) {
-    x += dx;
-  }
-}
+// function changeDirection() {
+//   if (rotateLeft) {
+//     rotate()
+//   }
+//   if (movingLeft) {
+//     x -= dx;
+//   }
+//   if (movingDown) {
+//     y += dy;
+//   }
+//   if (movingRight) {
+//     x += dx;
+//   }
+// }
 
 
 
