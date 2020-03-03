@@ -18,6 +18,7 @@ let movingLeft = false;
 let movingRight = false;
 let scalar = 0.7;
 
+//preloads picture 
 function preload(){
   entity = loadImage("assets/Millenium Falcon.jpg");
 }
@@ -37,20 +38,54 @@ function draw() {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
+//creates image of ship
 function createShip(){
   image(entity, x, y, scalar * entity.width, scalar * entity.height);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function keyPressed() {
   if (key === "w") {
