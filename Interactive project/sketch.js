@@ -7,21 +7,24 @@
 
 
 let entity;
+let backgroundImage;
 
 let x;
 let y;
-let dx = 5;
-let dy = 5;
+let dx = 0;
+let dy = 0;
+let ax = 0;
+let ay = 0;
 let speedUp = false;
 let speedDown = false;
 let turnLeft = false;
 let turnRight = false;
-let scalar = 0.2;
-let rotation = 0;
+let scalar = 0.08;
 
 //preloads picture 
 function preload(){
   entity = loadImage("assets/Millenium Falcon.jpg");
+  backgroundImage = loadImage("assets/Space background.png");
 }
 
 
@@ -33,63 +36,63 @@ function setup() {
 }
 
 function draw() {
-  background(220);
+  background(backgroundImage);
   playerShip();
   
 }
 
-
+function playerShip(){
+  createShip();
+  movePlayer();
+}
 
 //creates image of ship
 function createShip(){
   image(entity, x, y, scalar * entity.width, scalar * entity.height);
 }
 
-
-function playerShip(){
-  // moveEntity();
-  createShip();
-}
-
+// moves the player
 function movePlayer(){
   changeDirection();
-  changeSpeed();
+  speed();
 }
 
+// changes direction of player
+function changeDirection() {
+  if (rotateLeft) {
+    rotate(5);
+    entity;
+  }
+  if (rotateRight) {
+   rotate(-5);
+   entity;
+   }
+}
 
+//computes speed of player
+function speed(){
+  changeSpeed();
+  applySpeed();
+}
 
+// changes speed of player
+function changeSpeed(){
+  if(speedUp){
+    ax = 3;
+  }
+  if(speedDown){
+    ax = -3;
+  }
+}
 
+// applies speed to player
+function applySpeed(){
+  dx += ax; //add acceleration to velocity
+  x += dx;  //add velocity to location
+  ax = 0;  //reset acceleration
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Changes speed and rotation booleans
 function keyPressed() {
   if (key === "w") {
     speedUp = true; 
@@ -105,6 +108,7 @@ function keyPressed() {
   }
 }
 
+// changes speed and rotation booleans
 function keyReleased() {
   if (key === "w") {
     speedUp = false;
@@ -119,22 +123,3 @@ function keyReleased() {
     rotateRight = false;
   }
 }
-
-
-// function changeDirection() {
-//   if (rotateLeft) {
-//     rotate()
-//   }
-//   if (movingLeft) {
-//     x -= dx;
-//   }
-//   if (movingDown) {
-//     y += dy;
-//   }
-//   if (movingRight) {
-//     x += dx;
-//   }
-// }
-
-
-
