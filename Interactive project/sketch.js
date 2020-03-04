@@ -17,8 +17,9 @@ let ax = 0;
 let ay = 0;
 let speedUp = false;
 let speedDown = false;
-let turnLeft = false;
-let turnRight = false;
+let rotationAngle = 0;
+let rotateLeft = false;
+let rotateRight = false;
 let scalar = 0.08;
 
 //preloads picture 
@@ -41,32 +42,33 @@ function draw() {
   
 }
 
+
 function playerShip(){
-  createShip();
   movePlayer();
 }
 
 //creates image of ship
 function createShip(){
-  image(entity, x, y, scalar * entity.width, scalar * entity.height);
+  translate(x, y);
+  rotate(rotationAngle);
+  image(entity, 0, 0, scalar * entity.width, scalar * entity.height);
 }
 
 // moves the player
 function movePlayer(){
   changeDirection();
   speed();
+  createShip();
 }
 
 // changes direction of player
 function changeDirection() {
   if (rotateLeft) {
-    rotate(5);
-    entity;
+    rotationAngle += 1;
   }
   if (rotateRight) {
-   rotate(-5);
-   entity;
-   }
+    rotationAngle -= 1;
+  }
 }
 
 //computes speed of player
@@ -78,10 +80,10 @@ function speed(){
 // changes speed of player
 function changeSpeed(){
   if(speedUp){
-    ax = 3;
+    ax = 1;
   }
   if(speedDown){
-    ax = -3;
+    ax = -1;
   }
 }
 
