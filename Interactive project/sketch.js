@@ -7,6 +7,7 @@
 
 
 let entity;
+let enemy;
 let backgroundImage;
 
 let x;
@@ -25,6 +26,7 @@ let scalar = 0.08;
 //preloads picture 
 function preload(){
   entity = loadImage("assets/Millenium Falcon.jpg");
+  enemy = loadImage("TieFighter");
   backgroundImage = loadImage("assets/Space background.png");
 }
 
@@ -39,6 +41,7 @@ function setup() {
 function draw() {
   background(backgroundImage);
   playerShip();
+  //enemyShip();
   
 }
 
@@ -79,10 +82,10 @@ function speed(){
 
 // changes speed of player
 function changeSpeed(){
-  if(speedUp){
+  if(speedUp && dx < 10){
     ax = 1;
   }
-  if(speedDown){
+  if(speedDown && dx > 0){
     ax = -1;
   }
 }
@@ -125,3 +128,12 @@ function keyReleased() {
     rotateRight = false;
   }
 }
+
+// function enemyShip(){
+//   enemyMove();
+//   enemyShoot();
+// }
+
+// function enemyMove(){
+
+// }
