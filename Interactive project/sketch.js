@@ -12,9 +12,9 @@ let backgroundImage;
 
 let x;
 let y;
-let dx = 0;
+let dx = 0; //ship displacement
 let dy = 0;
-let ax = 0;
+let ax = 0; // ship acceleration
 let ay = 0;
 let speedUp = false;
 let speedDown = false;
@@ -22,6 +22,9 @@ let rotationAngle = 0;
 let rotateLeft = false;
 let rotateRight = false;
 let scalar = 0.08;
+let playerShooting = false;
+let bx = x; //bullet x
+let by = y; // bullet y
 
 //preloads picture 
 function preload(){
@@ -47,14 +50,10 @@ function draw() {
 
 
 function playerShip(){
+  push();
   movePlayer();
-}
-
-//creates image of ship
-function createShip(){
-  translate(x, y);
-  rotate(rotationAngle);
-  image(entity, 0, 0, scalar * entity.width, scalar * entity.height);
+  //playerShoot();
+  pop();
 }
 
 // moves the player
@@ -62,6 +61,13 @@ function movePlayer(){
   changeDirection();
   speed();
   createShip();
+}
+
+//creates image of ship
+function createShip(){
+  translate(x, y);
+  rotate(rotationAngle);
+  image(entity, 0, 0, scalar * entity.width, scalar * entity.height);
 }
 
 // changes direction of player
@@ -97,6 +103,25 @@ function applySpeed(){
   ax = 0;  //reset acceleration
 }
 
+// function playerShoot(){
+//   if(playerShooting){
+//     moveBullet();
+//     displayBullet();
+//   }
+// }
+
+// function moveBullet(){
+//     if(bx <= width && by <= height){
+//       bx += 3;
+//     } else {
+//       playerShooting = false;
+//     }
+// }
+
+// function displayBullet(){
+//   fill("red");
+//   rect(bx, by, 3, 5);
+// }
 // Changes speed and rotation booleans
 function keyPressed() {
   if (key === "w") {
@@ -110,6 +135,9 @@ function keyPressed() {
   }
   if (key === "d") {
     rotateRight = true;
+  }
+  if(key === "f"){
+    playerShooting = true;
   }
 }
 
@@ -127,6 +155,9 @@ function keyReleased() {
   if (key === "d") {
     rotateRight = false;
   }
+  // if (key === "f"){
+  //   playerShooting = false;  
+  // }
 }
 
 // function enemyShip(){
@@ -135,5 +166,9 @@ function keyReleased() {
 // }
 
 // function enemyMove(){
+//   movementTie();
+//   createEnemy();
+// }
 
+// function enemyShoot(){
 // }
