@@ -30,7 +30,7 @@ let by = y; // bullet y
 //preloads picture 
 function preload(){
   entity = loadImage("assets/Millenium Falcon.jpg");
-  //enemy = loadImage("assets/TieFighter.jpg");
+  //enemy = loadImage("assets/Tie Fighter.jpg");
   backgroundImage = loadImage("assets/Space background.png");
 }
 
@@ -89,19 +89,26 @@ function speed(){
 
 // changes speed of player
 function changeSpeed(){
-  if(speedUp && dx < 10){
-    ax = 1;
+  if(speedUp){
+    dx = 3*cos(rotationAngle);
+    dy = 3*sin(rotationAngle);
   }
   if(speedDown && dx > 0){
-    ax = -1;
+    dx = -3*cos(rotationAngle);
+    dy = -3*sin(rotationAngle);
   }
 }
 
 // applies speed to player
 function applySpeed(){
-  dx += ax; //add acceleration to velocity
+  // dx += ax; //add acceleration to velocity
   x += dx;  //add velocity to location
-  ax = 0;  //reset acceleration
+
+  // dy += ay;
+  y += dy;
+
+  // ax = 0;  //reset acceleration
+  // ay = 0;
 }
 
 function playerShoot(){
