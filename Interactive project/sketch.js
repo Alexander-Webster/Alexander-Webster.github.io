@@ -23,13 +23,14 @@ let rotateLeft = false;
 let rotateRight = false;
 let scalar = 0.08;
 let playerShooting = false;
-// let bx = x; //bullet x
-// let by = y; // bullet y
+let bulletInMotion = false;
+let bx = x; //bullet x
+let by = y; // bullet y
 
 //preloads picture 
 function preload(){
   entity = loadImage("assets/Millenium Falcon.jpg");
-  enemy = loadImage("assets/TieFighter.jpg");
+  //enemy = loadImage("assets/TieFighter.jpg");
   backgroundImage = loadImage("assets/Space background.png");
 }
 
@@ -52,7 +53,7 @@ function draw() {
 function playerShip(){
   // push();
   movePlayer();
-  //playerShoot();
+  playerShoot();
   // pop();
 }
 
@@ -103,25 +104,27 @@ function applySpeed(){
   ax = 0;  //reset acceleration
 }
 
-// function playerShoot(){
-//   if(playerShooting){
-//     moveBullet();
-//     displayBullet();
-//   }
-// }
+function playerShoot(){
+  if(playerShooting || bulletInMotion){
+    moveBullet();
+    displayBullet();
+  }
+}
 
-// function moveBullet(){
-//     if(bx <= width && by <= height){
-//       bx += 3;
-//     } else {
-//       playerShooting = false;
-//     }
-// }
+function moveBullet(){
+  bulletInMotion = true;
+  if(bx <= width && by <= height){
+    bx += 3;
+  } 
+  else {
+    bulletInMotion = false;
+  }
+}
 
-// function displayBullet(){
-//   fill("red");
-//   rect(bx, by, 3, 5);
-// }
+function displayBullet(){
+  fill("red");
+  rect(bx, by, 3, 5);
+}
 // Changes speed and rotation booleans
 function keyPressed() {
   if (key === "w") {
@@ -136,9 +139,9 @@ function keyPressed() {
   if (key === "d") {
     rotateRight = true;
   }
-  // if(key === "f"){
-  //   playerShooting = true;
-  // }
+  if(key === "f"){
+    playerShooting = true;
+  }
 }
 
 // changes speed and rotation booleans
@@ -155,9 +158,9 @@ function keyReleased() {
   if (key === "d") {
     rotateRight = false;
   }
-  // if (key === "f"){
-  //   playerShooting = false;  
-  // }
+  if (key === "f"){
+    playerShooting = false;  
+  }
 }
 
 // function enemyShip(){
