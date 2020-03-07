@@ -6,9 +6,14 @@
 // - describe what you did to take this project "above and beyond"
 
 
-let entity;
+let engineOff;
+let engineOnMed;
+let engineOnHigh;
+let engineOnLow;
 let enemy;
 let backgroundImage;
+
+
 
 let x;
 let y;
@@ -22,15 +27,21 @@ let speedDown = false;
 let rotationAngle = 0;
 let rotateLeft = false;
 let rotateRight = false;
-let scalar = 0.08;
+let scalar = 0.35;
 let playerShooting = false;
 let bulletInMotion = false;
 let bx = x; //bullet x
 let by = y; // bullet y
 
+
+
 //preloads picture 
 function preload(){
-  entity = loadImage("assets/Millenium Falcon.jpg");
+  
+  engineOff = loadImage("assets/Millenium-Falcon.png");
+  engineOnMed = loadImage("assets/Millenium-Falcon-Thrust.png");
+  engineOnHigh = loadImage("assets/Millenium-Falcon-Thrust-High.png");
+  engineOnLow = loadImage("assets/Millenium-Falcon-Thrust-Low.png");
   //enemy = loadImage("assets/Tie Fighter.jpg");
   backgroundImage = loadImage("assets/gear.png");
 }
@@ -41,6 +52,11 @@ function setup() {
   x = width/2;
   y = height/2;
   angleMode(DEGREES);
+  let asteroid = {
+    x: x,
+    y: y,
+    
+  };
 }
 
 function draw() {
@@ -70,44 +86,57 @@ function createShip(){
   translate(x, y);
   rotate(rotationAngle);
   imageMode(CENTER);
-  image(entity, 0, 0, scalar * entity.width, scalar * entity.height);
+  applySkin();
+}
+
+//Applies appropriate skin to player
+function applySkin(){
+  if(engine === false){
+    image(engineOff, 0, 0, scalar * engineOff.width, scalar * engineOff.height);
+  }
+  if(engine === true){
+    if(speedUp){
+      image(engineOnHigh, 0, 0, scalar * engineOnHigh.width, scalar * engineOnHigh.height);
+    }
+    else if(speedDown){
+      image(engineOnLow, 0, 0, scalar * engineOnLow.width, scalar * engineOnLow.height);
+    }
+    else image(engineOnMed, 0, 0, scalar * engineOnMed.width, scalar * engineOnMed.height);
+  }
 }
 
 // changes direction of player
 function changeDirection() {
   if (rotateLeft) {
-    rotationAngle += 1;
+    rotationAngle += 1.7;
   }
   if (rotateRight) {
-    rotationAngle -= 1;
+    rotationAngle -= 1.7;
   }
 }
 
-//computes speed of player
-
-
-// applies speed to player
+// computes the speed and movement of player
 function speed(){
   if(engine){
     applyRegularSpeed();
     checkForSpeedUp();
     checkForSpeedDown();
-    x += dx;  //add velocity to location
+    x += dx;  
     y += dy;
   }
 }
 
 function checkForSpeedUp(){
   if(speedUp){
-    dx = 10*cos(rotationAngle);
-    dy = 10*sin(rotationAngle);
+    dx = 7*cos(rotationAngle);
+    dy = 7*sin(rotationAngle);
   }
 }
 
 function checkForSpeedDown(){
   if(speedDown){
-    dx = 1*cos(rotationAngle);
-    dy = 1*sin(rotationAngle);
+    dx = 2*cos(rotationAngle);
+    dy = 2*sin(rotationAngle);
   }
 }
 
