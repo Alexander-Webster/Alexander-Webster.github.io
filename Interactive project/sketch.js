@@ -16,6 +16,7 @@ let dx = 0; //ship displacement
 let dy = 0;
 let ax = 0; // ship acceleration
 let ay = 0;
+let engine = false;
 let speedUp = false;
 let speedDown = false;
 let rotationAngle = 0;
@@ -31,7 +32,7 @@ let by = y; // bullet y
 function preload(){
   entity = loadImage("assets/Millenium Falcon.jpg");
   //enemy = loadImage("assets/Tie Fighter.jpg");
-  backgroundImage = loadImage("assets/Space background.png");
+  backgroundImage = loadImage("assets/gear.png");
 }
 
 
@@ -43,7 +44,7 @@ function setup() {
 }
 
 function draw() {
-  background(backgroundImage);
+  background(0);
   playerShip();
   //enemyShip();
   
@@ -68,6 +69,7 @@ function movePlayer(){
 function createShip(){
   translate(x, y);
   rotate(rotationAngle);
+  imageMode(CENTER);
   image(entity, 0, 0, scalar * entity.width, scalar * entity.height);
 }
 
@@ -82,34 +84,39 @@ function changeDirection() {
 }
 
 //computes speed of player
-function speed(){
-  changeSpeed();
-  applySpeed();
-}
 
-// changes speed of player
-function changeSpeed(){
-  if(speedUp){
-    dx = 3*cos(rotationAngle);
-    dy = 3*sin(rotationAngle);
-  }
-  if(speedDown && dx > 0){
-    dx = -3*cos(rotationAngle);
-    dy = -3*sin(rotationAngle);
-  }
-}
 
 // applies speed to player
-function applySpeed(){
-  // dx += ax; //add acceleration to velocity
-  x += dx;  //add velocity to location
-
-  // dy += ay;
-  y += dy;
-
-  // ax = 0;  //reset acceleration
-  // ay = 0;
+function speed(){
+  if(engine){
+    applyRegularSpeed();
+    checkForSpeedUp();
+    checkForSpeedDown();
+    x += dx;  //add velocity to location
+    y += dy;
+  }
 }
+
+function checkForSpeedUp(){
+  if(speedUp){
+    dx = 10*cos(rotationAngle);
+    dy = 10*sin(rotationAngle);
+  }
+}
+
+function checkForSpeedDown(){
+  if(speedDown){
+    dx = 1*cos(rotationAngle);
+    dy = 1*sin(rotationAngle);
+  }
+}
+
+function applyRegularSpeed(){
+  dx = 4*cos(rotationAngle);
+  dy = 4*sin(rotationAngle);
+}
+
+
 
 function playerShoot(){
   if(playerShooting || bulletInMotion){
@@ -148,6 +155,12 @@ function keyPressed() {
   }
   if(key === "f"){
     playerShooting = true;
+  }
+  if(key === "e"){
+    engine = true;
+  }
+  if(key === "r"){
+    engine = false;
   }
 }
 
