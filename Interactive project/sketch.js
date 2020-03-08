@@ -11,16 +11,15 @@ let engineOnMed;
 let engineOnHigh;
 let engineOnLow;
 let enemy;
+let explodedAsteroid;
 let backgroundImage;
+let collision = false;
 
-
-
+//variables for player
 let x;
 let y;
 let dx = 0; //ship displacement
 let dy = 0;
-let ax = 0; // ship acceleration
-let ay = 0;
 let engine = false;
 let speedUp = false;
 let speedDown = false;
@@ -33,7 +32,25 @@ let bulletInMotion = false;
 let bx = x; //bullet x
 let by = y; // bullet y
 
+//variables for asteroid
+let asX = 0;
+let asY = 0; 
+let asDisX = 7;
+let asDisY = 7;
 
+let vertex1X;
+let vertex1Y;
+let vertex2X;
+let vertex2Y;
+let vertex3X;
+let vertex3Y;
+let vertex4X;
+let vertex4Y;
+let vertex5X;
+let vertex5Y;
+let vertex6X;
+let vertex6Y;
+  
 
 //preloads picture 
 function preload(){
@@ -44,6 +61,7 @@ function preload(){
   engineOnLow = loadImage("assets/Millenium-Falcon-Thrust-Low.png");
   //enemy = loadImage("assets/Tie Fighter.jpg");
   backgroundImage = loadImage("assets/gear.png");
+  explodedAsteroid = loadImage("assets/explosion.png");
 }
 
 
@@ -52,26 +70,33 @@ function setup() {
   x = width/2;
   y = height/2;
   angleMode(DEGREES);
-  let asteroid = {
-    x: x,
-    y: y,
-    
-  };
+  vertex1X = random(40,50);
+  vertex1Y =random(40, 50);
+  vertex2X = random(40, 50);
+  vertex2Y = random(60, 65);
+  vertex3X = random(55, 65);
+  vertex3Y = random(80, 90);
+  vertex4X = random(70, 80);
+  vertex4Y = random(73, 78);
+  vertex5X = random(82, 90);
+  vertex5Y = random(55, 65);
+  vertex6X = random(65, 78);
+  vertex6Y = random(40, 50);
 }
 
 function draw() {
   background(0);
   playerShip();
   //enemyShip();
-  
+  asteroid();
 }
 
 
 function playerShip(){
-  // push();
+  push();
   movePlayer();
   playerShoot();
-  // pop();
+  pop();
 }
 
 // moves the player
@@ -101,7 +126,9 @@ function applySkin(){
     else if(speedDown){
       image(engineOnLow, 0, 0, scalar * engineOnLow.width, scalar * engineOnLow.height);
     }
-    else image(engineOnMed, 0, 0, scalar * engineOnMed.width, scalar * engineOnMed.height);
+    else {
+      image(engineOnMed, 0, 0, scalar * engineOnMed.width, scalar * engineOnMed.height);
+    }
   }
 }
 
@@ -224,3 +251,54 @@ function keyReleased() {
 
 // function enemyShoot(){
 // }
+
+//creates the asteroid
+function asteroid (){
+  if(collision === false){
+    checkForCollision();
+    moveAsteroid();
+    drawAsteroid();
+  }
+  if(collision === true){
+    destroyAsteroid();
+  }
+  
+}
+
+//moves the asteroid
+function moveAsteroid(){
+  asX += asDisX;
+  asY += asDisY;
+
+  if(asX >= width || asX <= 0){
+    asDisX *= -1;
+  }
+  if(asY >= height || asY <= 0){
+    asDisY *= -1;
+  }
+}
+
+//draws the asteroid
+function drawAsteroid(){
+  translate(asX, asY);
+  beginShape();
+  vertex(vertex1X, vertex1Y);
+  vertex(vertex2X, vertex2Y);
+  vertex(vertex3X, vertex3Y);
+  vertex(vertex4X, vertex4Y);
+  vertex(vertex5X, vertex5Y);
+  vertex(vertex6X, vertex6Y);
+  endShape(CLOSE);
+  fill("grey");
+}
+
+function checkForCollision(){
+  if(asX - x <= 59 && asX - x >= -59 && asY - y <= 59 && asY - y >= -59){
+    collision = true;
+  }
+}
+function destroyAsteroid(){
+  if(asX - x <= 70 && asX - x >= -70 && asY - y <= 70 && asY - y >= -70){
+    image(explodedAsteroid, x, y, scalar*explodedAsteroid.width, scalar*explodedAsteroid.height);
+  }
+}
