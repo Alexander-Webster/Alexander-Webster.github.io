@@ -13,7 +13,9 @@ let engineOnLow;
 let enemy;
 let explodedAsteroid;
 let backgroundImage;
-let collision = false;
+let resetAsteroid;
+
+
 
 //variables for player
 let x;
@@ -50,6 +52,13 @@ let vertex5X;
 let vertex5Y;
 let vertex6X;
 let vertex6Y;
+let collision = false;
+//sounds
+let explosionSound;
+let milleniumEngineSound;
+//skin timer
+let waitTime = 700;
+let timeLastChanged = 0;
   
 
 //preloads picture 
@@ -62,6 +71,10 @@ function preload(){
   //enemy = loadImage("assets/Tie Fighter.jpg");
   backgroundImage = loadImage("assets/gear.png");
   explodedAsteroid = loadImage("assets/explosion.png");
+
+  soundFormats("mp3");
+  explosionSound = loadSound("assets/Star Wars explosion 1 good");
+  milleniumEngineSound = loadSound("assets/Millenium Falcon Engine Sound");
 }
 
 
@@ -82,6 +95,7 @@ function setup() {
   vertex5Y = random(55, 65);
   vertex6X = random(65, 78);
   vertex6Y = random(40, 50);
+  milleniumEngineSound.setVolume(0.1);
 }
 
 function draw() {
@@ -96,8 +110,18 @@ function playerShip(){
   push();
   movePlayer();
   playerShoot();
+  falconSound();
   pop();
 }
+
+function falconSound(){
+  if(engine === true){
+    milleniumEngineSound.loop();
+  }
+  if(engine === false){
+    milleniumEngineSound.stop();
+  }
+} 
 
 // moves the player
 function movePlayer(){
@@ -148,8 +172,29 @@ function speed(){
     applyRegularSpeed();
     checkForSpeedUp();
     checkForSpeedDown();
+    checkForWalls();
+  }
+  
+
+}
+function checkForWalls(){
+  if(x <= width && x >= 0){
     x += dx;  
-    y += dy;
+  }
+  if(y <= height && y >= 0){
+    y += dy; 
+  }
+  if(x > width){
+    x = width;  
+  }
+  if(y > height){
+    y = height; 
+  }
+  if(x < 0){
+    x = 0;  
+  }
+  if(y < 0){
+    y = 0; 
   }
 }
 
@@ -218,6 +263,9 @@ function keyPressed() {
   if(key === "r"){
     engine = false;
   }
+  if(key === "p"){
+    resetAsteroid = true;
+  }
 }
 
 // changes speed and rotation booleans
@@ -237,7 +285,14 @@ function keyReleased() {
   if (key === "f"){
     playerShooting = false;  
   }
+  if(key === "p"){
+    resetAsteroid = false;
+  }
 }
+
+// function mouseClicked(){
+//   resetAsteroid = true;
+// }
 
 // function enemyShip(){
 //   enemyMove();
@@ -254,13 +309,21 @@ function keyReleased() {
 
 //creates the asteroid
 function asteroid (){
-  if(collision === false){
-    checkForCollision();
-    moveAsteroid();
-    drawAsteroid();
-  }
+  
   if(collision === true){
     destroyAsteroid();
+
+  }
+  if(collision === false){
+    moveAsteroid();
+    drawAsteroid();
+    checkForCollision();
+    
+  }
+  if(resetAsteroid){
+    collision = false;
+    asX = 0;
+    asY = 0;
   }
   
 }
@@ -281,6 +344,7 @@ function moveAsteroid(){
 //draws the asteroid
 function drawAsteroid(){
   translate(asX, asY);
+  rectMode(CENTER);
   beginShape();
   vertex(vertex1X, vertex1Y);
   vertex(vertex2X, vertex2Y);
@@ -293,12 +357,17 @@ function drawAsteroid(){
 }
 
 function checkForCollision(){
-  if(asX - x <= 59 && asX - x >= -59 && asY - y <= 59 && asY - y >= -59){
+  if(asX - x <= 69 && asX - x >= -87 && asY - y <= 47 && asY - y >= -47){
+    timeLastChanged = millis();
     collision = true;
+    explosionSound.play();
   }
 }
 function destroyAsteroid(){
-  if(asX - x <= 70 && asX - x >= -70 && asY - y <= 70 && asY - y >= -70){
-    image(explodedAsteroid, x, y, scalar*explodedAsteroid.width, scalar*explodedAsteroid.height);
+  asX = x-17;
+  asY = y-17;
+  if(millis() <= timeLastChanged + waitTime){
+    image(explodedAsteroid, asX, asY, scalar*explodedAsteroid.width, scalar*explodedAsteroid.height);
   }
 }
+
