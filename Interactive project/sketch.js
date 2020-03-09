@@ -84,7 +84,7 @@ function setup() {
   y = height/2;
   angleMode(DEGREES);
   vertex1X = random(40,50);
-  vertex1Y =random(40, 50);
+  vertex1Y = random(40, 50);
   vertex2X = random(40, 50);
   vertex2Y = random(60, 65);
   vertex3X = random(55, 65);
