@@ -1,21 +1,15 @@
-// Project Title
-// Your Name
-// Date
+// Asteroid Escape
+// Alexander Webster
+// March 9th, 2020
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// Added sound, Created an entity with animations, Added respawn mechanics, Incorporated (self-made) collision codes + animation, Added a color changer
 
-
+//variables for falcon engine states
 let engineOff;
 let engineOnMed;
 let engineOnHigh;
 let engineOnLow;
-let enemy;
-let explodedAsteroid;
-let backgroundImage;
-let resetAsteroid;
-
-
 
 //variables for player
 let x;
@@ -29,10 +23,6 @@ let rotationAngle = 0;
 let rotateLeft = false;
 let rotateRight = false;
 let scalar = 0.35;
-let playerShooting = false;
-let bulletInMotion = false;
-let bx = x; //bullet x
-let by = y; // bullet y
 
 //variables for asteroid
 let asX = 0;
@@ -52,14 +42,23 @@ let vertex5X;
 let vertex5Y;
 let vertex6X;
 let vertex6Y;
+
 let collision = false;
+let resetAsteroid;
+let explodedAsteroid;
 //sounds
 let explosionSound;
 let milleniumEngineSound;
 //skin timer
 let waitTime = 700;
 let timeLastChanged = 0;
-  
+//color 
+let asteroidColorR = 70;
+let asteroidColorG = 70;
+let asteroidColorB = 70;
+
+//instruction
+let instruct;
 
 //preloads picture 
 function preload(){
@@ -68,15 +67,12 @@ function preload(){
   engineOnMed = loadImage("assets/Millenium-Falcon-Thrust.png");
   engineOnHigh = loadImage("assets/Millenium-Falcon-Thrust-High.png");
   engineOnLow = loadImage("assets/Millenium-Falcon-Thrust-Low.png");
-  //enemy = loadImage("assets/Tie Fighter.jpg");
-  backgroundImage = loadImage("assets/gear.png");
   explodedAsteroid = loadImage("assets/explosion.png");
 
   soundFormats("mp3");
   explosionSound = loadSound("assets/Star Wars explosion 1 good");
   milleniumEngineSound = loadSound("assets/Millenium Falcon Engine Sound");
 }
-
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -95,25 +91,32 @@ function setup() {
   vertex5Y = random(55, 65);
   vertex6X = random(65, 78);
   vertex6Y = random(40, 50);
-  milleniumEngineSound.setVolume(0.1);
+  milleniumEngineSound.setVolume(0.08);
+  instruct = "A & D to rotate  W & S for speed  E & R for power                   P to spawn asteroid    Scroll to change asteroid color";
 }
 
+//creates the game
 function draw() {
   background(0);
+  displayInstructions();
   playerShip();
-  //enemyShip();
   asteroid();
 }
 
+function displayInstructions(){
+  fill("white");
+  text(instruct,80, 80, 120, 120);
+}
 
+// Creates player controlled millenium falcon
 function playerShip(){
   push();
   movePlayer();
-  playerShoot();
-  falconSound();
   pop();
+  falconSound();
 }
 
+//Applies
 function falconSound(){
   if(engine === true){
     milleniumEngineSound.loop();
@@ -174,9 +177,9 @@ function speed(){
     checkForSpeedDown();
     checkForWalls();
   }
-  
-
 }
+
+//Restricts falcon movement to inside the canvas
 function checkForWalls(){
   if(x <= width && x >= 0){
     x += dx;  
@@ -198,6 +201,7 @@ function checkForWalls(){
   }
 }
 
+//checks for a speed up and applies a faster speed
 function checkForSpeedUp(){
   if(speedUp){
     dx = 7*cos(rotationAngle);
@@ -205,6 +209,7 @@ function checkForSpeedUp(){
   }
 }
 
+//checks for a speed down and applies a slower speed
 function checkForSpeedDown(){
   if(speedDown){
     dx = 2*cos(rotationAngle);
@@ -212,34 +217,12 @@ function checkForSpeedDown(){
   }
 }
 
+//applies the regular speed to the falcon
 function applyRegularSpeed(){
   dx = 4*cos(rotationAngle);
   dy = 4*sin(rotationAngle);
 }
 
-
-
-function playerShoot(){
-  if(playerShooting || bulletInMotion){
-    moveBullet();
-    displayBullet();
-  }
-}
-
-function moveBullet(){
-  bulletInMotion = true;
-  if(bx <= width && by <= height){
-    bx += 3;
-  } 
-  else {
-    bulletInMotion = false;
-  }
-}
-
-function displayBullet(){
-  fill("red");
-  rect(bx, by, 3, 5);
-}
 // Changes speed and rotation booleans
 function keyPressed() {
   if (key === "w") {
@@ -253,9 +236,6 @@ function keyPressed() {
   }
   if (key === "d") {
     rotateRight = true;
-  }
-  if(key === "f"){
-    playerShooting = true;
   }
   if(key === "e"){
     engine = true;
@@ -282,34 +262,13 @@ function keyReleased() {
   if (key === "d") {
     rotateRight = false;
   }
-  if (key === "f"){
-    playerShooting = false;  
-  }
   if(key === "p"){
     resetAsteroid = false;
   }
 }
 
-// function mouseClicked(){
-//   resetAsteroid = true;
-// }
-
-// function enemyShip(){
-//   enemyMove();
-//   enemyShoot();
-// }
-
-// function enemyMove(){
-//   movementTie();
-//   createEnemy();
-// }
-
-// function enemyShoot(){
-// }
-
 //creates the asteroid
 function asteroid (){
-  
   if(collision === true){
     destroyAsteroid();
 
@@ -353,9 +312,10 @@ function drawAsteroid(){
   vertex(vertex5X, vertex5Y);
   vertex(vertex6X, vertex6Y);
   endShape(CLOSE);
-  fill("grey");
+  fill(asteroidColorR, asteroidColorG, asteroidColorB);
 }
 
+//checks for a collision between falcon and asteroid
 function checkForCollision(){
   if(asX - x <= 69 && asX - x >= -87 && asY - y <= 47 && asY - y >= -47){
     timeLastChanged = millis();
@@ -363,6 +323,8 @@ function checkForCollision(){
     explosionSound.play();
   }
 }
+
+//changes skin to explosion after impact
 function destroyAsteroid(){
   asX = x-17;
   asY = y-17;
@@ -371,3 +333,9 @@ function destroyAsteroid(){
   }
 }
 
+//switches asteroid colors
+function mouseWheel(){
+  asteroidColorR = random(0,255);
+  asteroidColorG = random(0,255);
+  asteroidColorB = random(0,255);
+}
