@@ -1,35 +1,43 @@
-// Project Title
-// Your Name
-// Date
-//
-// Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// setInterval demo
 
-let white = true;
-function setup() {
-  if(windowWidth > windowHeight){
-    cre
-  }
+let ballArray = [];
+
+function setup(){
+  createCanvas(windowWidth, windowHeight);
+  window.setInterval(addBall, 1.0*10^-10000);
 }
 
-function draw() {
-  background(220);
-  for (let i = 0; i < width; i += 100){
-    for(let e = 0; e < height; e += 100){
-      if(white){
-        fill("white");
-      }
-      else {
-        fill("black");
-      }
-      rect(i, e, 80, 80);
-      white = !white;
-    }
-    white = !white
+function draw(){
+  background("white");
+  moveBalls();
+  displayBalls();
+
+}
+
+function displayBalls(){
+  for (let i = 0; i < ballArray.length; i++){
+    fill(ballArray[i].color);
+    circle(ballArray[i].x, ballArray[i].y, ballArray[i].radius);
   }
 }
 
 
-function windowResized(){
-  setup();
+function addBall() {
+  let thisBall = {
+    x: random(width),
+    y: random(height),
+    radius: random(25,50),
+    color: color(random(255), random(255), random(255), random(255)),
+  };
+
+  ballArray.push(thisBall);
+}
+
+function moveBalls(){
+  for(let i=0; i<ballArray.length; i++){
+    let dx = random(-10,10);
+    let dy = random(-10,10);
+    ballArray[i].x += dx;
+    ballArray[i].y += dy;
+  }
 }
