@@ -13,3 +13,6 @@ function setup() {
 function draw() {
   background(220);
 }
+
+
+//A MAN HAS FALLEN INTO THE RIVER IN LEGO CITY
