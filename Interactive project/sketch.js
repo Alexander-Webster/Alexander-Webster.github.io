@@ -25,37 +25,42 @@ let rotateRight = false;
 let scalar = 0.35;
 
 //variables for asteroid
-let asX = 0;
-let asY = 0; 
-let asDisX = 7;
-let asDisY = 7;
+let asteroid = {
+  //asteroid movement
+  posX: 0,
+  posY: 0, 
+  DisX: 7,
+  DisY: 7,
+  //asteroid shape
+  vertex1X: 0,
+  vertex1: 0,
+  vertex2X: 0,
+  vertex2Y: 0,
+  vertex3X: 0,
+  vertex3Y: 0,
+  vertex4X: 0,
+  vertex4Y: 0,
+  vertex5X: 0,
+  vertex5Y: 0,
+  vertex6X: 0,
+  vertex6Y: 0,
+  //Collision info
+  collision: false,
+  resetAsteroid: null,
+  explodedAsteroid: false,
+  //sounds
+  explosionSound: null,   // im basically trying to recreate a variable that would be something like let explosionSound;
+  milleniumEngineSound: null,
+  //skin timer
+  waitTime: 700,
+  timeLastChanged: 0,
+  //color 
+  asteroidColorR: 70,
+  asteroidColorG: 70,
+  asteroidColorB: 70,
+};
 
-let vertex1X;
-let vertex1Y;
-let vertex2X;
-let vertex2Y;
-let vertex3X;
-let vertex3Y;
-let vertex4X;
-let vertex4Y;
-let vertex5X;
-let vertex5Y;
-let vertex6X;
-let vertex6Y;
 
-let collision = false;
-let resetAsteroid;
-let explodedAsteroid;
-//sounds
-let explosionSound;
-let milleniumEngineSound;
-//skin timer
-let waitTime = 700;
-let timeLastChanged = 0;
-//color 
-let asteroidColorR = 70;
-let asteroidColorG = 70;
-let asteroidColorB = 70;
 
 //instruction
 let instruct;
@@ -67,11 +72,11 @@ function preload(){
   engineOnMed = loadImage("assets/Millenium-Falcon-Thrust.png");
   engineOnHigh = loadImage("assets/Millenium-Falcon-Thrust-High.png");
   engineOnLow = loadImage("assets/Millenium-Falcon-Thrust-Low.png");
-  explodedAsteroid = loadImage("assets/explosion.png");
+  asteroid.explodedAsteroid = loadImage("assets/explosion.png");
 
   soundFormats("mp3");
-  explosionSound = loadSound("assets/Star Wars explosion 1 good");
-  milleniumEngineSound = loadSound("assets/Millenium Falcon Engine Sound");
+  asteroid.explosionSound = loadSound("assets/Star Wars explosion 1 good");
+  asteroid.milleniumEngineSound = loadSound("assets/Millenium Falcon Engine Sound");
 }
 
 function setup() {
@@ -79,19 +84,19 @@ function setup() {
   x = width/2;
   y = height/2;
   angleMode(DEGREES);
-  vertex1X = random(40,50);
-  vertex1Y = random(40, 50);
-  vertex2X = random(40, 50);
-  vertex2Y = random(60, 65);
-  vertex3X = random(55, 65);
-  vertex3Y = random(80, 90);
-  vertex4X = random(70, 80);
-  vertex4Y = random(73, 78);
-  vertex5X = random(82, 90);
-  vertex5Y = random(55, 65);
-  vertex6X = random(65, 78);
-  vertex6Y = random(40, 50);
-  milleniumEngineSound.setVolume(0.08);
+  asteroid.vertex1X = random(40,50);
+  asteroid.vertex1Y = random(40, 50);
+  asteroid.vertex2X = random(40, 50);
+  asteroid.vertex2Y = random(60, 65);
+  asteroid.vertex3X = random(55, 65);
+  asteroid.vertex3Y = random(80, 90);
+  asteroid.vertex4X = random(70, 80);
+  asteroid.vertex4Y = random(73, 78);
+  asteroid.vertex5X = random(82, 90);
+  asteroid.vertex5Y = random(55, 65);
+  asteroid.vertex6X = random(65, 78);
+  asteroid.vertex6Y = random(40, 50);
+  asteroid.milleniumEngineSound.setVolume(0.08);
   instruct = "A & D to rotate  W & S for speed  E & R for power                   P to spawn asteroid    Scroll to change asteroid color";
 }
 
@@ -100,7 +105,7 @@ function draw() {
   background(0);
   displayInstructions();
   playerShip();
-  asteroid();
+  createAsteroid();
 }
 
 function displayInstructions(){
@@ -118,11 +123,11 @@ function playerShip(){
 
 //Applies
 function falconSound(){
-  if(engine === true){
-    milleniumEngineSound.loop();
-  }
   if(engine === false){
-    milleniumEngineSound.stop();
+    asteroid.milleniumEngineSound.stop();
+  } 
+  else {
+    asteroid.milleniumEngineSound.loop();
   }
 } 
 
@@ -244,7 +249,7 @@ function keyPressed() {
     engine = false;
   }
   if(key === "p"){
-    resetAsteroid = true;
+    asteroid.resetAsteroid = true;
   }
 }
 
@@ -263,79 +268,80 @@ function keyReleased() {
     rotateRight = false;
   }
   if(key === "p"){
-    resetAsteroid = false;
+    asteroid.resetAsteroid = false;
   }
 }
 
 //creates the asteroid
-function asteroid (){
-  if(collision === true){
-    destroyAsteroid();
-
-  }
-  if(collision === false){
+function createAsteroid (){
+  if(asteroid.collision === false){
     moveAsteroid();
     drawAsteroid();
     checkForCollision();
     
   }
-  if(resetAsteroid){
-    collision = false;
-    asX = 0;
-    asY = 0;
+  if(asteroid.collision === true){
+    destroyAsteroid();
+
+  }
+  if(asteroid.resetAsteroid){
+    asteroid.collision = false;
+    asteroid.X = 0;
+    asteroid.Y = 0;
   }
   
 }
 
 //moves the asteroid
 function moveAsteroid(){
-  asX += asDisX;
-  asY += asDisY;
+  asteroid.X += asteroid.DisX;
+  asteroid.Y += asteroid.DisY;
 
-  if(asX >= width || asX <= 0){
-    asDisX *= -1;
+  if(asteroid.X >= width || asteroid.X <= 0){
+    asteroid.DisX *= -1;
   }
-  if(asY >= height || asY <= 0){
-    asDisY *= -1;
+  if(asteroid.Y >= height || asteroid.Y <= 0){
+    asteroid.DisY *= -1;
   }
 }
 
 //draws the asteroid
 function drawAsteroid(){
-  translate(asX, asY);
+  translate(asteroid.X, asteroid.Y);
   rectMode(CENTER);
+  fill(asteroid.asteroidColorR, asteroid.asteroidColorG, asteroid.asteroidColorB);
   beginShape();
-  vertex(vertex1X, vertex1Y);
-  vertex(vertex2X, vertex2Y);
-  vertex(vertex3X, vertex3Y);
-  vertex(vertex4X, vertex4Y);
-  vertex(vertex5X, vertex5Y);
-  vertex(vertex6X, vertex6Y);
+  vertex(asteroid.vertex1X, asteroid.vertex1Y);
+  vertex(asteroid.vertex2X, asteroid.vertex2Y);
+  vertex(asteroid.vertex3X, asteroid.vertex3Y);
+  vertex(asteroid.vertex4X, asteroid.vertex4Y);
+  vertex(asteroid.vertex5X, asteroid.vertex5Y);
+  vertex(asteroid.vertex6X, asteroid.vertex6Y);
   endShape(CLOSE);
-  fill(asteroidColorR, asteroidColorG, asteroidColorB);
+  
 }
 
 //checks for a collision between falcon and asteroid
 function checkForCollision(){
-  if(asX - x <= 69 && asX - x >= -87 && asY - y <= 47 && asY - y >= -47){
-    timeLastChanged = millis();
-    collision = true;
-    explosionSound.play();
+  if(asteroid.X - x <= 69 && asteroid.X - x >= -87 && asteroid.Y - y <= 47 && asteroid.Y - y >= -47){
+    asteroid.timeLastChanged = millis();
+    asteroid.collision = true;
+    asteroid.explosionSound.play();
   }
 }
 
 //changes skin to explosion after impact
 function destroyAsteroid(){
-  asX = x-17;
-  asY = y-17;
-  if(millis() <= timeLastChanged + waitTime){
-    image(explodedAsteroid, asX, asY, scalar*explodedAsteroid.width, scalar*explodedAsteroid.height);
+  asteroid.X = x-17;
+  asteroid.Y = y-17;
+  if(millis() <= asteroid.timeLastChanged + asteroid.waitTime){
+    image(asteroid.explodedAsteroid, asteroid.X, asteroid.Y, scalar*asteroid.explodedAsteroid.width, scalar*asteroid.explodedAsteroid.height);
   }
 }
 
 //switches asteroid colors
 function mouseWheel(){
-  asteroidColorR = random(0,255);
-  asteroidColorG = random(0,255);
-  asteroidColorB = random(0,255);
+  asteroid.asteroidColorR = random(0,255);
+  asteroid.asteroidColorG = random(0,255);
+  asteroid.asteroidColorB = random(0,255);
 }
