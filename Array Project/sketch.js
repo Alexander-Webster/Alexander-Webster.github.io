@@ -24,42 +24,20 @@ let rotateLeft = false;
 let rotateRight = false;
 let scalar = 0.35;
 
-//variables for asteroid
-let asteroid = {
-  //asteroid movement
-  posX: null,
-  posY: null, 
-  DisX: 7,
-  DisY: 7,
-  //asteroid shape
-  vertex1X: 0,
-  vertex1: 0,
-  vertex2X: 0,
-  vertex2Y: 0,
-  vertex3X: 0,
-  vertex3Y: 0,
-  vertex4X: 0,
-  vertex4Y: 0,
-  vertex5X: 0,
-  vertex5Y: 0,
-  vertex6X: 0,
-  vertex6Y: 0,
-  //Collision info
-  collision: false,
-  resetAsteroid: null,
-  explodedAsteroid: false,
-  //sounds
-  explosionSound: null,   // im basically trying to recreate a variable that would be something like let explosionSound;
-  milleniumEngineSound: null,
-  //skin timer
-  waitTime: 700,
-  timeLastChanged: 0,
-  //color 
-  asteroidColorR: 70,
-  asteroidColorG: 70,
-  asteroidColorB: 70,
-};
+//variables for tie fighter
+let tieFighter;
+let tieX = 200;
+let tieY = 200;
+let tieDisX = 2;
+let tieDisY = 2;
 
+//asteroid array
+let asteroidArray = [];
+
+
+//sounds
+let milleniumEngineSound;
+let asteroidExplosion;
 
 
 //instruction
@@ -72,35 +50,54 @@ function preload(){
   engineOnMed = loadImage("assets/Millenium-Falcon-Thrust.png");
   engineOnHigh = loadImage("assets/Millenium-Falcon-Thrust-High.png");
   engineOnLow = loadImage("assets/Millenium-Falcon-Thrust-Low.png");
-  asteroid.explodedAsteroid = loadImage("assets/explosion.png");
+  asteroidExplosion = loadImage("assets/explosion.png");
+  tieFighter = loadImage("assets/Tie Fighter Good.png");
 
   soundFormats("mp3");
-  asteroid.explosionSound = loadSound("assets/Star Wars explosion 1 good");
-  asteroid.milleniumEngineSound = loadSound("assets/Millenium Falcon Engine Sound");
+  asteroidExplosion = loadSound("assets/Star Wars explosion 1 good");
+  milleniumEngineSound = loadSound("assets/Millenium Falcon Engine Sound");
 }
+
+
+
+
+
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   x = width/2;
   y = height/2;
   angleMode(DEGREES);
-  asteroid.posX = random(0,width);
-  asteroid.posY = 0;
-  asteroid.vertex1X = random(40,50);
-  asteroid.vertex1Y = random(40, 50);
-  asteroid.vertex2X = random(40, 50);
-  asteroid.vertex2Y = random(60, 65);
-  asteroid.vertex3X = random(55, 65);
-  asteroid.vertex3Y = random(80, 90);
-  asteroid.vertex4X = random(70, 80);
-  asteroid.vertex4Y = random(73, 78);
-  asteroid.vertex5X = random(82, 90);
-  asteroid.vertex5Y = random(55, 65);
-  asteroid.vertex6X = random(65, 78);
-  asteroid.vertex6Y = random(40, 50);
-  asteroid.milleniumEngineSound.setVolume(0.08);
+    
+  for(let i = 0; i<6; i++){
+    let asteroid = {
+      //asteroid movement
+      posX: random(0,75),
+      posY: 0, 
+      DisX: 0.2,
+      DisY: 0.2,
+      //asteroid shape
+      vertex1X: random(40,50),
+      vertex1Y: random(40, 50),
+      vertex2X: random(40, 50),
+      vertex2Y: random(60, 65),
+      vertex3X: random(55, 65),
+      vertex3Y: random(80, 90),
+      vertex4X: random(70, 80),
+      vertex4Y: random(73, 78),
+      vertex5X: random(82, 90),
+      vertex5Y: random(55, 65),
+      vertex6X: random(65, 78),
+      vertex6Y: random(40, 50),
+    };
+    asteroidArray.push(asteroid);
+  }
   instruct = "A & D to rotate  W & S for speed  E & R for power                   P to spawn asteroid    Scroll to change asteroid color";
 }
+
+
+
+
 
 //creates the game
 function draw() {
@@ -108,12 +105,30 @@ function draw() {
   displayInstructions();
   playerShip();
   createAsteroid();
+  createTieFighter();
 }
 
 function displayInstructions(){
   fill("white");
   text(instruct,80, 80, 120, 120);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Creates player controlled millenium falcon
 function playerShip(){
@@ -126,10 +141,10 @@ function playerShip(){
 //Applies
 function falconSound(){
   if(engine === false){
-    asteroid.milleniumEngineSound.stop();
+    milleniumEngineSound.stop();
   } 
   else {
-    asteroid.milleniumEngineSound.loop();
+    milleniumEngineSound.loop();
   }
 } 
 
@@ -230,7 +245,22 @@ function applyRegularSpeed(){
   dy = 4*sin(rotationAngle);
 }
 
-// Changes speed and rotation booleans
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// changes specific booleans with key inputs (character rotation, power)
 function keyPressed() {
   if (key === "w") {
     speedUp = true; 
@@ -250,12 +280,9 @@ function keyPressed() {
   if(key === "r"){
     engine = false;
   }
-  if(key === "p"){
-    asteroid.resetAsteroid = true;
-  }
 }
 
-// changes speed and rotation booleans
+// changes specific booleans with key inputs (character rotation, power)
 function keyReleased() {
   if (key === "w") {
     speedUp = false;
@@ -269,81 +296,176 @@ function keyReleased() {
   if (key === "d") {
     rotateRight = false;
   }
-  if(key === "p"){
-    asteroid.resetAsteroid = false;
-  }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//START OF ASTEROID CODE
+
+
 
 //creates the asteroid
-function createAsteroid (){
-  if(asteroid.collision === false){
-    moveAsteroid();
-    drawAsteroid();
-    checkForCollision();
+// function createAsteroid (){
+//   if(asteroid.collision === false){
+//     moveAsteroid();
+//     drawAsteroid();
+//     checkForCollision();
     
-  }
-  if(asteroid.collision === true){
-    destroyAsteroid();
+//   }
+//   if(asteroid.collision === true){
+//     destroyAsteroid();
 
-  }
-  if(asteroid.resetAsteroid){
-    asteroid.collision = false;
-    asteroid.posX = random(0,width);
-    asteroid.posY = 0;
-  }
+//   }
+//   if(asteroid.resetAsteroid){
+//     asteroid.collision = false;
+//     asteroid.posX = random(0,width);
+//     asteroid.posY = 0;
+//   }
   
+// }
+
+// //moves the asteroid
+// function moveAsteroid(){
+//   asteroid.posX += asteroid.DisX;
+//   asteroid.posY += asteroid.DisY;
+
+//   if(asteroid.posX >= width || asteroid.posX <= 0){
+//     asteroid.DisX *= -1;
+//   }
+//   if(asteroid.posY >= height || asteroid.posY <= 0){
+//     asteroid.DisY *= -1;
+//   }
+// }
+
+// //draws the asteroid
+// function drawAsteroid(){
+//   translate(asteroid.posX, asteroid.posY);
+//   rectMode(CENTER);
+//   fill(asteroid.asteroidColorR, asteroid.asteroidColorG, asteroid.asteroidColorB);
+//   beginShape();
+//   vertex(asteroid.vertex1X, asteroid.vertex1Y);
+//   vertex(asteroid.vertex2X, asteroid.vertex2Y);
+//   vertex(asteroid.vertex3X, asteroid.vertex3Y);
+//   vertex(asteroid.vertex4X, asteroid.vertex4Y);
+//   vertex(asteroid.vertex5X, asteroid.vertex5Y);
+//   vertex(asteroid.vertex6X, asteroid.vertex6Y);
+//   endShape(CLOSE);
+  
+// }
+
+// //checks for a collision between falcon and asteroid
+// function checkForCollision(){
+//   if(asteroid.posX - x <= 69 && asteroid.posX - x >= -87 && asteroid.posY - y <= 47 && asteroid.posY - y >= -47){
+//     asteroid.timeLastChanged = millis();
+//     asteroid.collision = true;
+//     asteroid.explosionSound.play();
+//   }
+// }
+
+// //changes skin to explosion after impact
+// function destroyAsteroid(){
+//   asteroid.posX = x-17;
+//   asteroid.posY = y-17;
+//   if(millis() <= asteroid.timeLastChanged + asteroid.waitTime){
+//     image(asteroid.explodedAsteroid, asteroid.posX, asteroid.posY, scalar*asteroid.explodedAsteroid.width, scalar*asteroid.explodedAsteroid.height);
+//   }
+// }
+
+// //switches asteroid colors
+// function mouseWheel(){
+//   asteroid.asteroidColorR = random(0,255);
+//   asteroid.asteroidColorG = random(0,255);
+//   asteroid.asteroidColorB = random(0,255);
+// }
+
+
+
+//END OF ASTEROID CODE
+
+
+
+function createAsteroid(){
+  displayAsteroid();
+  moveAsteroid();
+  
+  //checkForCollision();
 }
 
-//moves the asteroid
 function moveAsteroid(){
-  asteroid.posX += asteroid.DisX;
-  asteroid.posY += asteroid.DisY;
+  for(let i=0; i<asteroidArray.length; i++){
+    
+    asteroidArray[i].posX += asteroidArray[i].DisX;
+    asteroidArray[i].posY += asteroidArray[i].DisY;
 
-  if(asteroid.posX >= width || asteroid.posX <= 0){
-    asteroid.DisX *= -1;
-  }
-  if(asteroid.posY >= height || asteroid.posY <= 0){
-    asteroid.DisY *= -1;
-  }
-}
-
-//draws the asteroid
-function drawAsteroid(){
-  translate(asteroid.posX, asteroid.posY);
-  rectMode(CENTER);
-  fill(asteroid.asteroidColorR, asteroid.asteroidColorG, asteroid.asteroidColorB);
-  beginShape();
-  vertex(asteroid.vertex1X, asteroid.vertex1Y);
-  vertex(asteroid.vertex2X, asteroid.vertex2Y);
-  vertex(asteroid.vertex3X, asteroid.vertex3Y);
-  vertex(asteroid.vertex4X, asteroid.vertex4Y);
-  vertex(asteroid.vertex5X, asteroid.vertex5Y);
-  vertex(asteroid.vertex6X, asteroid.vertex6Y);
-  endShape(CLOSE);
-  
-}
-
-//checks for a collision between falcon and asteroid
-function checkForCollision(){
-  if(asteroid.posX - x <= 69 && asteroid.posX - x >= -87 && asteroid.posY - y <= 47 && asteroid.posY - y >= -47){
-    asteroid.timeLastChanged = millis();
-    asteroid.collision = true;
-    asteroid.explosionSound.play();
+    if(asteroidArray[i].posX >= 100 || asteroidArray[i].posX <= 0){
+      asteroidArray[i].DisX *= -1;
+    }
+    if(asteroidArray[i].posY >= 100 || asteroidArray[i].posY <= 0){
+      asteroidArray[i].DisY *= -1;
+    }
   }
 }
 
-//changes skin to explosion after impact
-function destroyAsteroid(){
-  asteroid.posX = x-17;
-  asteroid.posY = y-17;
-  if(millis() <= asteroid.timeLastChanged + asteroid.waitTime){
-    image(asteroid.explodedAsteroid, asteroid.X, asteroid.Y, scalar*asteroid.explodedAsteroid.width, scalar*asteroid.explodedAsteroid.height);
+function displayAsteroid(){
+  for (let i = 0; i < asteroidArray.length; i++){
+    rectMode(CENTER);
+    fill("grey");
+    beginShape();
+    vertex(asteroidArray[i].vertex1X, asteroidArray[i].vertex1Y);
+    vertex(asteroidArray[i].vertex2X, asteroidArray[i].vertex2Y);
+    vertex(asteroidArray[i].vertex3X, asteroidArray[i].vertex3Y);
+    vertex(asteroidArray[i].vertex4X, asteroidArray[i].vertex4Y);
+    vertex(asteroidArray[i].vertex5X, asteroidArray[i].vertex5Y);
+    vertex(asteroidArray[i].vertex6X, asteroidArray[i].vertex6Y);
+    endShape(CLOSE);
   }
 }
 
-//switches asteroid colors
-function mouseWheel(){
-  asteroid.asteroidColorR = random(0,255);
-  asteroid.asteroidColorG = random(0,255);
-  asteroid.asteroidColorB = random(0,255);
+
+
+//START OF TIE FIGHTER CODE
+
+function createTieFighter(){
+  moveTieFighter();
+  displayTieFighter();
+}
+
+function moveTieFighter(){
+  // tieX += tieDisX;
+  // tieY += tieDisY;
+  if(tieX < x){
+    tieX += tieDisX;
+  }
+  if(tieX > x){
+    tieX -= tieDisX;
+  }
+  if(tieY < y){
+    tieY += tieDisY;
+  }
+  if(tieY > y){
+    tieY -= tieDisY;
+  }
+}
+
+function displayTieFighter(){
+  imageMode(CENTER);
+  image(tieFighter, tieX, tieY, 0.2*tieFighter.width, 0.2*tieFighter.height);
 }
