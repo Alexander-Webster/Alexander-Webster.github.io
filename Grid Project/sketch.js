@@ -1,9 +1,10 @@
-// Game of life
+// Grid Project - Pixel art
 // Alexander Webster
-// 2020-05-06
+// 2020-05-11
 //
-// Extra for Experts:
+// Extra for Experts: Added reset function that clears the array only once to allow for further drawing, included multiple states for each grid 
 
+//creates a 2D array
 function make2DArray(cols, rows){
   let arr = new Array(cols);
   for (let i = 0; i < arr.length; i++) {
@@ -17,6 +18,7 @@ let colors;
 let cols;
 let rows;
 let resolution = 25;
+
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -33,25 +35,26 @@ function setup() {
 
 
 
-
+//creates the pixel art program
 function draw() {
   background(200);
+  displayTitle();
   selectColor();
   drawGrid();
-
-  
+  checkForReset();
 }
   
 
 
-
+//draws the pixel grid with necessary colors
 function drawGrid(){
   for (let i = 0; i < cols; i++) {
     for (let j = 0; j < rows; j++) {
       let x = i * resolution;
       let y = j * resolution + 5;
       stroke(50);
-      //Indicates that a color must be placed
+      
+      //Indicates that a specific color must be placed
       if(mouseX <= x + resolution && mouseX >= x && mouseY <= y + resolution && mouseY >= y && mouseIsPressed && colorState === 1){
         colors[i][j] = 1;
       }
@@ -61,7 +64,15 @@ function drawGrid(){
       if(mouseX <= x + resolution && mouseX >= x && mouseY <= y + resolution && mouseY >= y && mouseIsPressed && colorState === 3){
         colors[i][j] = 3;
       }
-
+      if(mouseX <= x + resolution && mouseX >= x && mouseY <= y + resolution && mouseY >= y && mouseIsPressed && colorState === 4){
+        colors[i][j] = 4;
+      }
+      if(mouseX <= x + resolution && mouseX >= x && mouseY <= y + resolution && mouseY >= y && mouseIsPressed && colorState === 5){
+        colors[i][j] = 5;
+      }
+      if(mouseX <= x + resolution && mouseX >= x && mouseY <= y + resolution && mouseY >= y && mouseIsPressed && colorState === 6){
+        colors[i][j] = 6;
+      }
 
       //applies the colors
       if(colors[i][j] === 1){
@@ -76,6 +87,18 @@ function drawGrid(){
         fill("green");
         rect(x, y, resolution, resolution);
       }
+      else if(colors[i][j] === 4){
+        fill("orange");
+        rect(x, y, resolution, resolution);
+      }
+      else if(colors[i][j] === 5){
+        fill("black");
+        rect(x, y, resolution, resolution);
+      }
+      else if(colors[i][j] === 6){
+        fill("white");
+        rect(x, y, resolution, resolution);
+      }
       else {
         fill(255);
         rect(x, y, resolution, resolution);
@@ -86,20 +109,24 @@ function drawGrid(){
   }
 }
 
+//Creates the select color boxes
 function selectColor(){
   createBoxes();
   checkIfClicked();
+  displayColor();
 }
 
+//draws the color select boxes
 function createBoxes(){
   createRedBox();
   createBlueBox();
   createGreenBox();
   createOrangeBox();
   createBlackBox();
-  createEraser();
+  createWhiteBox();
 }
 
+//changes color state if the appropriate color box was clicked on
 function checkIfClicked(){
   if(mouseX <= 1285 && mouseX >= 1250 && mouseY >= 20 && mouseY <= 55 && mouseIsPressed){
     colorState = 1;
@@ -107,10 +134,49 @@ function checkIfClicked(){
   if(mouseX <= 1285 && mouseX >= 1250 && mouseY >= 70 && mouseY <= 105 && mouseIsPressed){
     colorState = 2;
   }
-  if(mouseX <= 1285 && mouseX >= 1250 && mouseY >= 120 && mouseY <= 140 && mouseIsPressed){
+  if(mouseX <= 1285 && mouseX >= 1250 && mouseY >= 120 && mouseY <= 155 && mouseIsPressed){
     colorState = 3;
   }
+  if(mouseX <= 1285 && mouseX >= 1250 && mouseY >= 170 && mouseY <= 205 && mouseIsPressed){
+    colorState = 4;
+  }
+  if(mouseX <= 1285 && mouseX >= 1250 && mouseY >= 220 && mouseY <= 255 && mouseIsPressed){
+    colorState = 5;
+  }
+  if(mouseX <= 1285 && mouseX >= 1250 && mouseY >= 270 && mouseY <= 305 && mouseIsPressed){
+    colorState = 6;
+  }
 }
+
+//displays text stating what color is currently selected
+function displayColor(){
+  textSize(35);
+  if(colorState === 1){
+    fill("red");
+    text("Red", 1225, 360);
+  }
+  if(colorState === 2){
+    fill("blue");
+    text("Blue", 1225, 360);
+  }
+  if(colorState === 3){
+    fill("green");
+    text("Green", 1225, 360);
+  }
+  if(colorState === 4){
+    fill("orange");
+    text("Orange", 1225, 360);
+  }
+  if(colorState === 5){
+    fill("black");
+    text("Black", 1225, 360);
+  }
+  if(colorState === 6){
+    fill("white");
+    text("White", 1225, 360);
+  }
+}
+
 
 function createRedBox(){
   fill("red");
@@ -137,55 +203,26 @@ function createBlackBox(){
   rect(1250, 220, 35, 35);
 }
 
-function createEraser(){
+function createWhiteBox(){
   fill("White");
   rect(1250, 270, 35, 35);
 }
 
-// if(mouseX <= x + resolution && mouseX >= x && mouseY <= y + resolution && mouseY >= y){
-//   stroke(50);
-//   fill(100);
-//   rect(x, y, resolution, resolution);
 
-  
-//   //compute next based on grid
-//   for (let i = 0; i < cols; i++) {
-//     for (let j = 0; j < rows; j++) {
-//       let state = grid[i][j];
+//resets grid to all white 
+function checkForReset(){
+  textSize(20);
+  fill("red");
+  text("Press R to reset", 1250, 520, 100, 100);
+  for (let i = 0; i < cols; i++) {
+    for (let j = 0; j < rows; j++) {
+      if(keyIsPressed && key === "r"){
+        colors[i][j] = 6;
+      }
+    }
+  }
+}
 
-//       //count live neighbors
-//       let sum = 0;
-//       let neighbors = countNeighbors(grid, i, j);
-
-        
-
-//       if (state === 0 && neighbors === 3){
-//         next[i][j] = 1;
-//       } 
-//       else if (state === 1 && (neighbors < 2 || neighbors > 3)){
-//         next[i][j] = 0;
-//       } 
-//       else {
-//         next[i][j] = state;
-//       }
-//     }
-//   }
-  
-//   grid = next;
-// }
-
-
-// function countNeighbors(grid, x, y){
-//   let sum = 0;
-//   for( let i = -1; i < 2; i++) {
-//     for( let j = -1; j < 2; j++){
-
-//       let col = (x + i + cols) % cols;
-//       let row = (y + j + rows) % rows;
-//       sum += grid[col][row];
-//     }
-//   }
-//   sum -= grid[x][y];
-//   return sum;
-
-// }
+function displayTitle(){
+  text("PIXEL ART STUDIO MK. 1", 1250, 400, 100, 100);
+}
